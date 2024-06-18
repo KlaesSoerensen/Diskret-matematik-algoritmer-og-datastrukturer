@@ -24,6 +24,14 @@ propositions = {
     "Svar 2.l": And(Not(p), Xor(p, q))
 }
 
+def prop_to_str(prop):
+    if isinstance(prop, Implies):
+        return f"{prop.args[0]}⇒{prop.args[1]}"
+    prop_str = str(prop)
+    prop_str = prop_str.replace('Or', '∨').replace('And', '∧').replace('Not', '¬').replace('Implies', '⇒')
+    prop_str = prop_str.replace('|', '∨').replace('&', '∧').replace('~', '¬').replace('^', '⊕')
+    return prop_str
+
 def compare_all_to_original():
     results = {}
     for key, proposition in propositions.items():
@@ -33,4 +41,6 @@ def compare_all_to_original():
 # Example usage
 results = compare_all_to_original()
 for prop, is_equivalent in results.items():
-    print(f"{prop} is {'equivalent' if is_equivalent else 'not equivalent'} to p => ¬q")
+    expression = prop_to_str(propositions[prop])
+    original_expression = prop_to_str(original_prop).replace('~', '¬')
+    print(f"{prop:<10} {expression:<30} {'is equivalent to' if is_equivalent else 'is not equivalent to':<30} {original_expression}")
