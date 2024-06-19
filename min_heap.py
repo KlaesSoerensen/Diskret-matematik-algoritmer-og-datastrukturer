@@ -97,18 +97,13 @@ class MinHeap:
     def print(self):
         print(*self.heap)
 
-heap = MinHeap([1,2,3,4,5])
+heap = MinHeap([2, 4, 3, 7, 7, 5, 6, 8, 9])
 print('Heap: ')
 heap.print()
 #print(heap.delete(2))
 print('Extract min: ')
 heap.extract_min()
 heap.print()
-""" print('Insert: ')
-heap.insert(1)
-heap.insert(2)
-heap.insert(3)
-heap.insert(4)
-heap.insert(5)
 
-heap.print() """
+heap.insert(1)
+heap.print()
