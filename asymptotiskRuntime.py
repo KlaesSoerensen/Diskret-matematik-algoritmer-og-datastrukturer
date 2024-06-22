@@ -1,13 +1,13 @@
-from bigO import BigO
-lib = BigO()
+import bigO
+lib = bigO()
 
 def algo1(n):
-    n = len(n)
-    i = 1
-    j =n
-    while i<=j:
-        i = 4*i
-        j = 2*j
+    i = n
+    s = 0
+    while i >= 1:
+        for j in range(i, i * 2):
+            s = s + 1
+        i = math.floor(i / 2)
             
   
 print("Algo1")

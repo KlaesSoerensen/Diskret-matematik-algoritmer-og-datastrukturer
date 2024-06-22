@@ -61,41 +61,7 @@ def print_all_paths(starting_at: str, graph: Graph, previous_ordering: dict[str,
     for vertex in graph.vertices:
         print_path_to_node(vertex, starting_at, previous_ordering)
 
-
-def main():
-    # Example usage:
-    graph = Graph()
-
-    # Add vertexes
-    graph.add_vertex('A')
-    graph.add_vertex('B')
-    graph.add_vertex('C')
-    graph.add_vertex('D')
-    graph.add_vertex('E')
-    graph.add_vertex('F')
-    graph.add_vertex('G')
-
-    # Add edges with cost values
-    graph.add_edge('A', 'B', 4)
-    graph.add_edge('A', 'G', 7)
-
-    graph.add_edge('B', 'C', 1)
-    graph.add_edge('B', 'D', 2)
-
-    graph.add_edge('C', 'A', 2)
-    graph.add_edge('C', 'F', 6)
-
-    graph.add_edge('D', 'C', 1)
-    graph.add_edge('D', 'F', 4)
-
-    graph.add_edge('E', 'C', 8)
-
-    graph.add_edge('F', 'E', 1)
-
-    graph.add_edge('G', 'E', 6)
-    graph.add_edge('G', 'C', 4)
-
-    start_vertex = 'A'
+def printAll(graph: Graph, start_vertex: str):
     distances, previous, changed_edges, visited_order = graph.dijkstra(start_vertex)
 
     print("Shortest distances from vertex", start_vertex + ":")
@@ -117,6 +83,85 @@ def main():
     print("\nVisited order:")
     print(visited_order)
 
+def emanuel():
+    # Example usage:
+    graph = Graph()
+    # Add vertexes
+    graph.add_vertex('A')
+    graph.add_vertex('B')
+    graph.add_vertex('C')
+    graph.add_vertex('D')
+    graph.add_vertex('E')
+    graph.add_vertex('F')
+    graph.add_vertex('G')
+    # Add edges with cost values
+    graph.add_edge('A', 'B', 4)
+    graph.add_edge('A', 'G', 7)
+
+    graph.add_edge('B', 'C', 1)
+    graph.add_edge('B', 'D', 2)
+
+    graph.add_edge('C', 'A', 2)
+    graph.add_edge('C', 'F', 6)
+
+    graph.add_edge('D', 'C', 1)
+    graph.add_edge('D', 'F', 4)
+
+    graph.add_edge('E', 'C', 8)
+
+    graph.add_edge('F', 'E', 1)
+
+    graph.add_edge('G', 'E', 6)
+    graph.add_edge('G', 'C', 4)
+
+    start_vertex = 'A'
+    printAll(graph, start_vertex)
+
+import sys
+def fromCLIInput(args: list[str]):
+    graph = Graph()
+    start_vertex = None
+
+    for arg in args:
+        if arg.startswith("start="):
+            start_vertex = arg.split("=")[1]
+        if arg.startswith("nodes="):
+            splitOnComma = arg.split("=")[1].replace("\"", "").split(", ")
+            for nodeNeighboorPair in splitOnComma:
+                if ":" in nodeNeighboorPair:
+                    nodeNeighboorSplit = nodeNeighboorPair.split(": ")
+                    node = nodeNeighboorSplit[0]
+                    graph.add_vertex(node)
+                    neighbors = nodeNeighboorSplit[1]
+                    if neighbors is not None:
+                        neighboorSplit = neighbors.split(" ")
+                        # For each 2 elements, first is node name, second is cost
+                        # in mem: neighboorSplit = [a, 3, b, 4, c, 2]
+                        for i in range(0, len(neighboorSplit), 2):
+                            graph.add_edge(node, neighboorSplit[i], int(neighboorSplit[i + 1]))
+    
+                else:
+                    graph.add_vertex(nodeNeighboorPair)
+
+    printAll(graph, start_vertex)
+    
 
 if __name__ == '__main__':
-    main()
+
+    # start=a
+    # nodes="a, b: g 1 k 4, c: a_2 b_4 c_2"
+
+    # CLI input syntax (optional): 
+	# nodes="<node_name>: <neighboor_1> <cost_1> <neighboor_2> <cost_2> ..., <node_name>: ..."
+    # start="<node_name>"
+
+	# Each node and its neighboors are comma separated, and each neighboor is space separated
+	# Works with nodes with no neighboors and so no ":" as well. 
+	# example: nodes="a: b 1 c 4 d 2, c, d: a 8 e 1, e"
+
+    for arg in sys.argv:
+        if arg.startswith("start=") or arg.startswith("nodes="):
+            fromCLIInput(sys.argv)
+            exit(0)
+
+    emanuel()

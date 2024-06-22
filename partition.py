@@ -13,8 +13,9 @@ def partition(arr, low, high):
     return i + 1  # return the index of the pivot element
 
 # Test the function
-#Remember to add a 0 first since the array can be excluding the zero index
-arr = [21,17, 28, 14, 9, 18, 6, 1, 26, 15, 30, 7, 13, 19, 2]
+# Remember to add a 0 first since the array can be excluding the zero index
+# ^ NOT ANYMORE! Don't do that! How dare you?!
+arr = [21, 17, 28, 14, 9, 18, 6, 1, 26, 15, 30, 7, 13, 19, 2]
 high = 13
 low = 4
 
@@ -32,6 +33,7 @@ if __name__ == "__main__":
             tempLow = arg.split("=")[1].replace("\"", "").replace(",", "")
             low = int(tempLow)
 
+arr.insert(0,0)
 pivot_index = partition(arr, low, high)
-print(f"Array after partitioning: {arr}")
+print(f"Array after partitioning: {arr[1:]}")
 print(f"Pivot index: {pivot_index}")

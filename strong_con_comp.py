@@ -52,7 +52,10 @@ def get_strongly_connected_components(graph: set[Vertex]) -> list[set[Vertex]]:
 	components = [component for i, component in enumerate(components) if component not in components[:i]]
 	return components
 
-if (__name__ == "__main__"):
+import sys
+# Driver code
+if __name__ == '__main__':
+	# List of graph edges as per above diagram
 	a = Vertex('a')
 	b = Vertex('b')
 	c = Vertex('c')
@@ -75,7 +78,35 @@ if (__name__ == "__main__"):
 	i.neighbors = {e}
 	j.neighbors = {b,g}
 
-	graph = {a, b, c, d, e, f, g, h, i,j}
+	graph = {a, b, c, d, e, f, g, h, i, j}
+
+	# CLI input syntax (optional): 
+	# nodes="<node_name>: <neighboor_1> <neighboor_2> ..., <node_name>: ..."
+	# Each node and its neighboors are comma separated, and each neighboor is space separated
+	# Works with nodes with no neighboors and so no ":" as well. 
+	# example: nodes="a: b c d, b: a d e, c, d: a e, e: a d, f: c e"
+	for arg in sys.argv:
+		if arg.startswith("nodes="):
+			splitOnComma = arg.split("=")[1].replace("\"", "").split(", ")
+			newGraph = set()
+			vertices = {}
+			for nodeNeighboorPair in splitOnComma:
+				if ":" in nodeNeighboorPair:
+					nodeNeighboorSplit = nodeNeighboorPair.split(": ")
+					node = nodeNeighboorSplit[0]
+					vertices[node] = Vertex(node)
+					neighbors = nodeNeighboorSplit[1]
+					if neighbors is not None:
+						for neighbor in neighbors.split(" "):
+							if neighbor not in vertices:
+								vertices[neighbor] = Vertex(neighbor)
+							vertices[node].neighbors.add(vertices[neighbor])	
+					newGraph.add(vertices[node])
+				else:
+					vertices[nodeNeighboorPair] = Vertex(nodeNeighboorPair)
+					newGraph.add(vertices[nodeNeighboorPair])
+
+			graph = newGraph
 
 	components = get_strongly_connected_components(graph)
 

@@ -231,19 +231,23 @@ class RedBlackTree:
             self._print_tree_recursive(node.left, indent, False)
             self._print_tree_recursive(node.right, indent, True)
 
-
+import sys
 def main():
     tree = RedBlackTree()
-    tree.insert(18)
-    tree.insert(9)
-    tree.insert(21)
-    tree.insert(7)
-    tree.insert(15)
-    tree.insert(24)
-    tree.insert(4)
-    tree.insert(11)
-    tree.insert(16)
-    tree.insert(25)
+    cliInputRecieved = False
+
+    # Expected CLI syntax array="1 2 3 4 5 6"
+    for arg in sys.argv:
+        if arg.startswith("array="):
+            cliInputRecieved = True
+            splitOnEquals = arg.split("=")[1]
+            splitOnSpace = splitOnEquals.strip().split(" ")
+            for num in splitOnSpace:
+                tree.insert(int(num))
+
+    if not cliInputRecieved:
+        for num in [23, 7, 2, 27, 20, 5, 26, 18, 24, 21]:
+            tree.insert(num)
 
     tree.print_tree()
     
