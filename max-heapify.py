@@ -101,10 +101,6 @@ class MaxHeap:
         print(*self.heap)
 
 
-<<<<<<< Updated upstream
-heap = MaxHeap([])
-=======
-<<<<<<< HEAD
 if __name__ == "__main__": 
     #startHeap="[space separated list of numbers]" insert="[space separated list of numbers]"
     startHeap = []
@@ -119,10 +115,6 @@ if __name__ == "__main__":
             startHeap = arg.split("=")[1].replace("\"", "").replace(",", "").split(" ")
             startHeap = list(map(int, startHeap))
             noInfoGiven = False
-=======
-heap = MaxHeap([])
->>>>>>> f64bd5a05dfe7c739a64e2e7406958733030645e
->>>>>>> Stashed changes
 
     # For each input block and wait for user
     if noInfoGiven:
