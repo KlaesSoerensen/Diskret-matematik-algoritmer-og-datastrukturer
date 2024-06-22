@@ -2,6 +2,7 @@
 in which each node has a value larger than its sub-trees"""
 
 from math import ceil
+import sys
 
 
 
@@ -100,10 +101,50 @@ class MaxHeap:
         print(*self.heap)
 
 
+<<<<<<< Updated upstream
 heap = MaxHeap([])
+=======
+<<<<<<< HEAD
+if __name__ == "__main__": 
+    #startHeap="[space separated list of numbers]" insert="[space separated list of numbers]"
+    startHeap = []
+    toBeInserted = []
+    noInfoGiven = True
+    for arg in sys.argv:
+        if arg.startswith("insert="):
+            toBeInserted = arg.split("=")[1].replace("\"", "").replace(",", "").split(" ")
+            toBeInserted = list(map(int, toBeInserted))
+            noInfoGiven = False
+        elif arg.startswith("startHeap="):
+            startHeap = arg.split("=")[1].replace("\"", "").replace(",", "").split(" ")
+            startHeap = list(map(int, startHeap))
+            noInfoGiven = False
+=======
+heap = MaxHeap([])
+>>>>>>> f64bd5a05dfe7c739a64e2e7406958733030645e
+>>>>>>> Stashed changes
 
+    # For each input block and wait for user
+    if noInfoGiven:
+        temp = input("Enter startHeap as space separated list of numbers (or none):\n").replace(",", "").split(" ")
+        if len(temp) > 1:
+            startHeap = list(map(int, temp))
+        
+        temp2 = input("Enter inserted numbers as space separated list of numbers:\n").replace(",", "").split(" ")
+        if len(temp2) > 1:
+            toBeInserted = list(map(int, temp2))
 
+    # Create a max heap with the given startHeap numbers if provided
+    heap = MaxHeap(startHeap)
+    # Create a max heap with the given input numbers
+    for num in toBeInserted:
+        heap.insert(num)
 
+    # Print the max heap
+    print("Heap layout:")
+    heap.print()
+
+"""
 print('Heap: ')
 heap.print()
 # print(heap.delete(2))
@@ -113,10 +154,10 @@ heap.print()
 # hvis der skal udføres 2 heap extract max kør "heap.extract_max()" 2 gange
 heap.extract_max()
 heap.print()
-""" heap.print()
+heap.print()
 print('Max-heapify: ')
-heap.print() """
-""" print('Insert: ')
+heap.print()
+print('Insert: ')
 heap.insert(6)
 heap.insert(12)
 heap.insert(13)
@@ -124,4 +165,5 @@ heap.insert(4)
 heap.insert(8)
 heap.insert(14)
 heap.insert(5)
-heap.print() """
+heap.print() 
+"""

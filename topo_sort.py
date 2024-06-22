@@ -56,11 +56,38 @@ def printAllTopologicalOrders(graph):
     # find all topological ordering and print them
     findAllTopologicalOrders(graph, path, discovered, N)
 
+import sys
 # Driver code
 if __name__ == '__main__':
     # List of graph edges as per above diagram
-    edges = [('b', 'a'), ('b', 'd'), ('d', 'a'), ('b', 'c'), ('d', 'e'), ('b', 'e'), ('f', 'e'),('c', 'e'), ('f', 'c')]
+    edges = [('b', 'a'), ('b', 'c'), ('b', 'd'), ('c', 'e'), ('d', 'a'), ('d', 'e'), ('f', 'c'), ('f', 'e')]
     vertices = ['a', 'b', 'c', 'd', 'e', 'f']
+
+    # CLI input syntax (optional): 
+    # nodes="<node_name>: <neighboor_1> <neighboor_2> ..., <node_name>: ..."
+    # Each node and its neighboors are comma separated, and each neighboor is space separated
+    # Works with nodes with no neighboors and so no ":" as well. 
+    # example: nodes="a: b c d, b: a d e, c, d: a e, e: a d, f: c e"
+    for arg in sys.argv:
+        if arg.startswith("nodes="):
+            splitOnComma = arg.split("=")[1].replace("\"", "").split(", ")
+            newEdges = []
+            newVerts = []
+            for nodeNeighboorPair in splitOnComma:
+                if ":" in nodeNeighboorPair:
+                    nodeNeighboorSplit = nodeNeighboorPair.split(": ")
+                    node = nodeNeighboorSplit[0]
+                    neighbors = nodeNeighboorSplit[1]
+                    newVerts.append(node)
+                    if neighbors is not None:
+                        for neighbor in neighbors.split(" "):
+                            newEdges.append((node, neighbor))
+                else:           
+                    newVerts.append(nodeNeighboorPair)
+
+            edges = newEdges
+            vertices = newVerts
+
     print("All Topological sorts")
     # create a graph from edges
     graph = Graph(vertices)
