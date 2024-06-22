@@ -103,6 +103,16 @@ def get_vertex_by_finish_time_order(G: list[Vertex]) -> list[Vertex]:
 
 import sys
 def main():
+    a = Vertex('a')
+    b = Vertex('b')
+    c = Vertex('c')
+    d = Vertex('d')
+    e = Vertex('e')
+    f = Vertex('f')
+    g = Vertex('g')
+    h = Vertex('h')
+    i = Vertex('i')
+    vertices = {a, b, c, d, e, f, g, h, i}
     neighbourDict = {
         a: [d, g],
         b: [c],
@@ -113,43 +123,39 @@ def main():
         g: [i, b, h],
         h: [f, g, d]
     }
-    vertList = [
-        Vertex('a'),
-        Vertex('b'),
-        Vertex('c'),
-        Vertex('d'),
-        Vertex('e'),
-        Vertex('f'),
-        Vertex('g'),
-        Vertex('h'),
-        Vertex('i')
-    ]
-    sortAlphabetically = True
+    sortAlphabetically = False
 
-    # CLI input syntax (optional): 
+     # CLI input syntax (optional): 
     # nodes="<node_name>: <neighboor_1> <neighboor_2> ..., <node_name>: ..."
     # Each node and its neighboors are comma separated, and each neighboor is space separated
     # Works with nodes with no neighboors and so no ":" as well. 
     # example: nodes="a: b c d, b: a d e, c, d: a e, e: a d, f: c e"
     for arg in sys.argv:
+        if arg.startswith("--alphabetical"):
+            sortAlphabetically = True
         if arg.startswith("nodes="):
             splitOnComma = arg.split("=")[1].replace("\"", "").split(", ")
-            newNeighbourDict = {}
+            newNeighbourDict: dict[Vertex, list[Vertex]] = dict()
             newVerts = []
+            vertsFromStrs = {}
             for nodeNeighboorPair in splitOnComma:
                 if ":" in nodeNeighboorPair:
                     nodeNeighboorSplit = nodeNeighboorPair.split(": ")
                     node = nodeNeighboorSplit[0]
                     neighbors = nodeNeighboorSplit[1]
-                    if node not in newNeighbourDict:
-                        newNeighbourDict[node] = Vertex(node)
+                    if node not in vertsFromStrs:
+                        vertsFromStrs[node] = Vertex(node)
+                        newVerts.append(vertsFromStrs[node])
+                    if vertsFromStrs[node] not in newNeighbourDict:
+                        newNeighbourDict[vertsFromStrs[node]] = []
                     for neighbor in neighbors.split(" "):
-                        if neighbor not in vertices:
-                            vertices[neighbor] = Vertex(neighbor)
-                        vertices[node].neighbors.append(vertices[neighbor])
+                        if neighbor not in vertsFromStrs:
+                            vertsFromStrs[neighbor] = Vertex(neighbor)
+                        newNeighbourDict[vertsFromStrs[node]].append(vertsFromStrs[neighbor])
                 else:
-                    if nodeNeighboorPair not in vertices:
-                        vertices[nodeNeighboorPair] = Vertex(nodeNeighboorPair)
+                    if nodeNeighboorPair not in vertsFromStrs:
+                        vertsFromStrs[nodeNeighboorPair] = Vertex(nodeNeighboorPair)
+                        newVerts.append(vertsFromStrs[nodeNeighboorPair])
 
             neighbourDict = newNeighbourDict
             vertList = newVerts

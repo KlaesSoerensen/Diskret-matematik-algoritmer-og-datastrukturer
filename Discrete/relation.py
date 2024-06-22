@@ -1,6 +1,24 @@
 R = [('a', 'a'), ('a', 'b'), ('b', 'a'), ('c', 'c')]
 s = {'a', 'b', 'c'}
 
+import sys
+#Input syntax: range="a b, c d, e f, ..."
+for arg in sys.argv:
+    if arg.startswith("range="):
+        splitOnComma = arg.split("=")[1].replace("\"", "").split(",")
+        rempRange = []
+        nodeSet = set()
+        for pair in splitOnComma:
+            splitOnSpace = pair.strip().split(" ")
+            a = splitOnSpace[0]
+            b = splitOnSpace[1]
+            nodeSet.add(a)
+            nodeSet.add(b)
+            rempRange.append((a, b))
+
+        s = nodeSet
+        R = rempRange
+
 # Check refleksivitet
 refleksiv = all((x, x) in R for x in s)
 

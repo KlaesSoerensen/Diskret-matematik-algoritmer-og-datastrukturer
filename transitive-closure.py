@@ -63,6 +63,24 @@ relations = [
     ('a','b'),('b','a'), ('b','b'), ('b','c')
 ]
 
+import sys
+#Input syntax: range="a b, c d, e f, ..."
+for arg in sys.argv:
+    if arg.startswith("range="):
+        splitOnComma = arg.split("=")[1].replace("\"", "").split(",")
+        rempRange = []
+        nodeSet = set()
+        for pair in splitOnComma:
+            splitOnSpace = pair.strip().split(" ")
+            a = splitOnSpace[0]
+            b = splitOnSpace[1]
+            nodeSet.add(a)
+            nodeSet.add(b)
+            rempRange.append((a, b))
+
+        nodes = nodeSet
+        relations = rempRange
+
 print("Relationer:")
 print(relations)
 numRelations = toNumbers(relations, nodes)
