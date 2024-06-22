@@ -129,7 +129,7 @@ def HuffmanDecoding(encodedData, huffmanTree):
     return string  
 
 
-symbol_frequency = {"b": 90, "c": 15, "d": 40, "f": 30,"g":125,"h":35}
+symbol_frequency = {"a": 5,"b": 25, "c": 10, "d": 30,"e":15}
 print("Symbol Frequency:", symbol_frequency)  
 encoding, the_tree = HuffmanEncoding(symbol_frequency)  
 print("Encoded output:", encoding)  

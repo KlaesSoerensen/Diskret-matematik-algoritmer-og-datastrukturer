@@ -1,4 +1,4 @@
-H = [89, None, None, None, 23, 45 , 11]
+H = [89, None, None, None, 23, 45, 11]
 key = 33
 
 #used for both linear and double hashing

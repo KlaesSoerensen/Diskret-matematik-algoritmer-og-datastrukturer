@@ -135,7 +135,7 @@ def print_bits(data, coding):
     for key in coding:
         print("Number of bits for character", key, ":", len(coding[key]))
 
-the_data = create_data(['a', 'b', 'c', 'd', 'e'], [200,250,100,350,400])
+the_data = create_data(['a', 'b', 'c', 'd', 'e'], [5, 25, 10, 30, 15])
 encoding, the_tree = HuffmanEncoding(the_data)
 print("Encoded output:", encoding)
 print("Decoded Output:", HuffmanDecoding(encoding, the_tree))
