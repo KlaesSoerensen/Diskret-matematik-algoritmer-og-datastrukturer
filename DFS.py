@@ -101,58 +101,70 @@ def get_vertex_by_time_order(G: list[Vertex]) -> list[Vertex]:
 def get_vertex_by_finish_time_order(G: list[Vertex]) -> list[Vertex]:
     return sorted(G, key=lambda x: x.f, reverse=False)
 
-
+import sys
 def main():
-    a = Vertex('a')
-    b = Vertex('b')
-    c = Vertex('c')
-    d = Vertex('d')
-    e = Vertex('e')
-    f = Vertex('f')
-    g = Vertex('g')
-    h = Vertex('h')
-    
+    neighbourDict = {
+        a: [d, g],
+        b: [c],
+        c: [b, f],
+        d: [g, e],
+        e: [d, a],
+        f: [b, g],
+        g: [i, b, h],
+        h: [f, g, d]
+    }
+    vertList = [
+        Vertex('a'),
+        Vertex('b'),
+        Vertex('c'),
+        Vertex('d'),
+        Vertex('e'),
+        Vertex('f'),
+        Vertex('g'),
+        Vertex('h'),
+        Vertex('i')
+    ]
+    sortAlphabetically = True
 
-    add_neighbours({
-        a: [b,e],
-        b: [c, f],
-        c: [d,f,g],
-        d: [h],
-        e: [],
-        f: [a, e, g],
-        g: [d],
-        h: [g]
-    }, sort_alphabetically=False)
+    # CLI input syntax (optional): 
+    # nodes="<node_name>: <neighboor_1> <neighboor_2> ..., <node_name>: ..."
+    # Each node and its neighboors are comma separated, and each neighboor is space separated
+    # Works with nodes with no neighboors and so no ":" as well. 
+    # example: nodes="a: b c d, b: a d e, c, d: a e, e: a d, f: c e"
+    for arg in sys.argv:
+        if arg.startswith("nodes="):
+            splitOnComma = arg.split("=")[1].replace("\"", "").split(", ")
+            newNeighbourDict = {}
+            newVerts = []
+            for nodeNeighboorPair in splitOnComma:
+                if ":" in nodeNeighboorPair:
+                    nodeNeighboorSplit = nodeNeighboorPair.split(": ")
+                    node = nodeNeighboorSplit[0]
+                    neighbors = nodeNeighboorSplit[1]
+                    if node not in newNeighbourDict:
+                        newNeighbourDict[node] = Vertex(node)
+                    for neighbor in neighbors.split(" "):
+                        if neighbor not in vertices:
+                            vertices[neighbor] = Vertex(neighbor)
+                        vertices[node].neighbors.append(vertices[neighbor])
+                else:
+                    if nodeNeighboorPair not in vertices:
+                        vertices[nodeNeighboorPair] = Vertex(nodeNeighboorPair)
 
-    Vertexs = [a, b, c, d, e, f, g, h]
+            neighbourDict = newNeighbourDict
+            vertList = newVerts
 
-    # s = Vertex('s')
-    # z = Vertex('z')
-    # y = Vertex('y')
-    # w = Vertex('w')
-    # x = Vertex('x')
-    # v = Vertex('v')
-    # t = Vertex('t')
-    # u = Vertex('u')
-    #
-    # Vertexs = [s, z, y, w, x, v, t, u]
-    #
-    # add_neighbours({
-    #     t: [v, u],
-    #     u: [t, v],
-    #     v: [s, w]
-    # })
+    add_neighbours(neighbourDict, sortAlphabetically)
 
-    DFS(Vertexs)
-
-    edge_check(Vertexs)
+    DFS(vertList)
+    edge_check(vertList)
 
     print("Tree Edges (" + str(len(treeEdges)) + "): ", treeEdges)
     print("Back Edges (" + str(len(backEdges)) + "): ", backEdges)
     print("Forward Edges (" + str(len(forwardEdges)) + "): ", forwardEdges)
     print("Cross Edges (" + str(len(crossEdges)) + "): ", crossEdges)
 
-    for u in get_vertex_by_time_order(Vertexs):
+    for u in get_vertex_by_time_order(vertList):
         print(u.id, u.d, u.f)
 
 
