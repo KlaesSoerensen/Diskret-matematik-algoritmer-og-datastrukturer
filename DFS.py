@@ -111,17 +111,16 @@ def main():
     f = Vertex('f')
     g = Vertex('g')
     h = Vertex('h')
-    i = Vertex('i')
-    vertices = {a, b, c, d, e, f, g, h, i}
+    vertList = {a, b, c, d, e, f, g, h}
     neighbourDict = {
-        a: [d, g],
-        b: [c],
-        c: [b, f],
-        d: [g, e],
-        e: [d, a],
-        f: [b, g],
-        g: [i, b, h],
-        h: [f, g, d]
+        a: [b, e],
+        b: [c, f],
+        c: [g, f],
+        d: [h],
+        e: [],
+        f: [e, a, g],
+        g: [d],
+        h: [g]
     }
     sortAlphabetically = False
 
