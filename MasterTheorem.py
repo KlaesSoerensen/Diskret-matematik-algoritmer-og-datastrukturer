@@ -57,7 +57,7 @@ if __name__ == "__main__":
 
     a = float(input("Enter a:\n"))
     b = float(input("Enter b:\n"))
-    k = float(input("Enter k:\n"))
+    k = float(input("Enter c:\n"))
     i = float(input("Enter i:\n"))
     solved = solve_master_theorem(a, b, k, i)
     print(f"Solution:"
