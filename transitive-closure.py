@@ -78,7 +78,7 @@ for arg in sys.argv:
             nodeSet.add(b)
             rempRange.append((a, b))
 
-        nodes = nodeSet
+        nodes = list(nodeSet)
         relations = rempRange
 
 print("Relationer:")

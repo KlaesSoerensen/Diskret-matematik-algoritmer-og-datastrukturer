@@ -80,7 +80,7 @@ if __name__ == '__main__':
                     neighbors = nodeNeighboorSplit[1]
                     newVerts.append(node)
                     if neighbors is not None:
-                        for neighbor in neighbors.split(" "):
+                        for neighbor in neighbors.strip().split(" "):
                             newEdges.append((node, neighbor))
                 else:           
                     newVerts.append(nodeNeighboorPair)
