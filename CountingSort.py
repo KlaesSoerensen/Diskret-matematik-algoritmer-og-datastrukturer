@@ -17,7 +17,7 @@ def countingSort(array):
             counted_array.append(lastSum)
             lastSum += count[i]
     
-    print("Array C:",counted_array)
+    print("Array C:",counted_array, " Sum of c: ", sum(counted_array))
     for i in range(1, 10):
         count[i] += count[i - 1]
 
