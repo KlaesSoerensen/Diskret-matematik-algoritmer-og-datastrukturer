@@ -1,9 +1,9 @@
 import sys
 
 class Graph:
-    def __init__(self, vertices):
+    def __init__(self, vertices, start_node='A'):
         self.V = vertices
-        self.graph = {chr(ord('A') + i): {} for i in range(vertices)}
+        self.graph = {chr(ord(start_node) + i): {} for i in range(vertices)}
 
     def min_key(self, key, mst_set):
         min_value = sys.maxsize
@@ -16,12 +16,12 @@ class Graph:
 
         return min_vertex
 
-    def prim_jarnik(self):
+    def prim_jarnik(self, start_node):
         parent = {v: None for v in self.graph}
         key = {v: sys.maxsize for v in self.graph}
         mst_set = {v: False for v in self.graph}
 
-        key['A'] = 0
+        key[start_node] = 0
 
         for _ in range(self.V):
             u = self.min_key(key, mst_set)
@@ -39,7 +39,9 @@ class Graph:
         return parent
 
 # Example usage:
-g = Graph(9)
+
+startNode = 'A'
+g = Graph(9,startNode)
 g.graph = {
     'A': {'C': 11, 'F': 10, 'H': 2,'I':3},
     'B': {'C':5,'D':13 },
@@ -51,7 +53,34 @@ g.graph = {
     'H':{'A':2,'C':9,'D':1,'I':6},
     'I':{'A':3,'F':4,'G':12,'H':6}
 }
-mst = g.prim_jarnik()
+
+import sys
+for arg in sys.argv:
+    if arg.startswith("start="):
+        startNode = arg.split("=")[1].strip()
+    
+    elif arg.startswith("nodes="):
+        nodes = arg.split("=")[1].strip().replace("\"", "").split(",") # a: e 12, b: a 12 c 12, c: f d, d: d f, e: b h, f: i, g: e, h: g i c, i: j, j: f
+        tempGraph: dict[str: dict[str, int]] = dict()
+
+        for nodeNeighboorPair in nodes: # a: e 12 b 4
+
+            if ":" in nodeNeighboorPair:
+                node, edges = nodeNeighboorPair.split(":") # a: e 12, b: a 12 c 12
+                edges = edges.strip().split(" ")
+                tempGraph[node] = dict()
+                for i in range(0, len(edges), 2): # a 12 c 12
+                    edge = edges[i]
+                    edgeWeight = edges[i+1]
+                    tempGraph[node][edge] = int(edgeWeight)
+            else:
+                tempGraph[nodeNeighboorPair] = dict()
+
+        g = Graph(len(tempGraph),startNode)
+        g.graph = tempGraph
+
+
+mst = g.prim_jarnik(startNode)
 
 print("Edge   Weight")
 for v in mst:

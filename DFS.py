@@ -182,6 +182,7 @@ def main():
     else:
         print("Executing DFS_Visit")
         DFS_Visit(vertList, startNode)
+        
     edge_check(vertList)
 
     print("Tree Edges (" + str(len(treeEdges)) + "): ", treeEdges)

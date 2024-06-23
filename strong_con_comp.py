@@ -97,7 +97,7 @@ if __name__ == '__main__':
 					vertices[node] = Vertex(node)
 					neighbors = nodeNeighboorSplit[1]
 					if neighbors is not None:
-						for neighbor in neighbors.split(" "):
+						for neighbor in neighbors.strip().split(" "):
 							if neighbor not in vertices:
 								vertices[neighbor] = Vertex(neighbor)
 							vertices[node].neighbors.add(vertices[neighbor])	
