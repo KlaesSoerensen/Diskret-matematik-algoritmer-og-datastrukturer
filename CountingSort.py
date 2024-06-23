@@ -31,7 +31,14 @@ def countingSort(array):
         array[i] = output[i]
 
 
-data = [3, 1, 4, 3, 5, 0, 3, 1]
+data = [2, 0, 6, 2, 3, 5, 5, 1, 2]
+
+import sys
+# Optional CLI input syntax: python CountingSort.py array="1 2 3 4 5 6"
+for arg in sys.argv: 
+    if arg.startswith("array="):
+        data = list(map(int, arg.split("=")[1].replace("\"", "").split(" ")))
+
 countingSort(data)
 print("Sorted Array in Ascending Order: ")
 print(data)

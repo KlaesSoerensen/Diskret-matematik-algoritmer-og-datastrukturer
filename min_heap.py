@@ -97,7 +97,7 @@ class MinHeap:
     def print(self):
         print(*self.heap)
 
-heap = MinHeap([2, 4, 3, 7, 7, 5, 6, 8, 9])
+heap = MinHeap([3, 5, 6, 10, 11, 8, 7, 18, 16, 15])
 print('Heap: ')
 heap.print()
 #print(heap.delete(2))
