@@ -131,8 +131,9 @@ def HuffmanDecoding(encodedData, huffmanTree):
 symbol_frequency = {"b": 90, "c": 15, "d": 40, "f": 30,"g":125,"h":35}
 
 import sys
+#Optional CLI input syntax: python HuffmanTreeCode table="<char> <frequency>, <char> <frequency>, ..."
+#Example: python HuffmanTreeCode.py table="a 10, b 15, c 12, d 3, e 4, f 13, g 1"
 if __name__ == "__main__": 
-    #table="k v, k v, k v"
     for arg in sys.argv:
         if arg.startswith("table="):
             table_data = arg.split("=")[1].replace("\"", "").split(",")
