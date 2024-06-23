@@ -123,45 +123,65 @@ def main():
         h: [g]
     }
     sortAlphabetically = False
+    startNode = None
 
-     # CLI input syntax (optional): 
+    # CLI input syntax (optional): 
     # nodes="<node_name>: <neighboor_1> <neighboor_2> ..., <node_name>: ..."
     # Each node and its neighboors are comma separated, and each neighboor is space separated
     # Works with nodes with no neighboors and so no ":" as well. 
     # example: nodes="a: b c d, b: a d e, c, d: a e, e: a d, f: c e"
+    vertsFromStrs: dict[str, Vertex] = dict()
+    newVerts: list[Vertex] = []
+    newNeighbourDict: dict[Vertex, list[Vertex]] = dict()
     for arg in sys.argv:
-        if arg.startswith("--alphabetical"):
+        if arg.startswith("start="):
+            startNode = arg.split("=")[1]
+            if startNode not in vertsFromStrs:
+                vertsFromStrs[startNode] = Vertex(startNode)
+                newVerts.append(vertsFromStrs[startNode])
+
+            if vertsFromStrs[startNode] not in newNeighbourDict:
+                newNeighbourDict[vertsFromStrs[startNode]] = []
+            
+            startNode = vertsFromStrs[startNode]
+
+        elif arg == "--alphabetical":
             sortAlphabetically = True
-        if arg.startswith("nodes="):
+
+        elif arg.startswith("nodes="):
             splitOnComma = arg.split("=")[1].replace("\"", "").split(", ")
-            newNeighbourDict: dict[Vertex, list[Vertex]] = dict()
-            newVerts = []
-            vertsFromStrs = {}
             for nodeNeighboorPair in splitOnComma:
                 if ":" in nodeNeighboorPair:
                     nodeNeighboorSplit = nodeNeighboorPair.split(": ")
                     node = nodeNeighboorSplit[0]
-                    neighbors = nodeNeighboorSplit[1]
+                    neighbors = nodeNeighboorSplit[1].split()
                     if node not in vertsFromStrs:
                         vertsFromStrs[node] = Vertex(node)
                         newVerts.append(vertsFromStrs[node])
                     if vertsFromStrs[node] not in newNeighbourDict:
                         newNeighbourDict[vertsFromStrs[node]] = []
-                    for neighbor in neighbors.split(" "):
+                    for neighbor in neighbors:
                         if neighbor not in vertsFromStrs:
                             vertsFromStrs[neighbor] = Vertex(neighbor)
+                            newVerts.append(vertsFromStrs[neighbor])
                         newNeighbourDict[vertsFromStrs[node]].append(vertsFromStrs[neighbor])
                 else:
-                    if nodeNeighboorPair not in vertsFromStrs:
-                        vertsFromStrs[nodeNeighboorPair] = Vertex(nodeNeighboorPair)
-                        newVerts.append(vertsFromStrs[nodeNeighboorPair])
+                    node = nodeNeighboorPair
+                    if node not in vertsFromStrs:
+                        vertsFromStrs[node] = Vertex(node)
+                        newVerts.append(vertsFromStrs[node])
 
-            neighbourDict = newNeighbourDict
-            vertList = newVerts
+    neighbourDict = newNeighbourDict
+    vertList = newVerts
 
     add_neighbours(neighbourDict, sortAlphabetically)
 
-    DFS(vertList)
+    if startNode is None:
+        print("Executing DFS")
+        DFS(vertList)
+    else:
+        print("Executing DFS_Visit")
+        DFS_Visit(vertList, startNode)
     edge_check(vertList)
 
     print("Tree Edges (" + str(len(treeEdges)) + "): ", treeEdges)
@@ -170,7 +190,7 @@ def main():
     print("Cross Edges (" + str(len(crossEdges)) + "): ", crossEdges)
 
     for u in get_vertex_by_time_order(vertList):
-        print(u.id, u.d, u.f)
+        print(str(u.id) + " push: " + str(u.d) + " pop: " + str(u.f))
 
 
 if (__name__ == "__main__"):
