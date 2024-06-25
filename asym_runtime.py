@@ -12,13 +12,14 @@ class Spy:
 
 # Function to count the number of iterations
 def test_algo(n, spy: Spy):
-    i = n    
-    j = n       # 21
-    while i > 1:
-        while j > i:
-            j = j - 1
-            spy.inc()
-        i = i - 1  # O(n)
+    s = 0      # 20
+    for i in range(1, n):
+        for j in range(1, n):
+            if i == j:
+                for k in range(1, n):
+                    s += 1
+                    spy.inc()
+        i = i - 1  # O(n^2)
 
 """
     s = 0      # 20
@@ -190,6 +191,11 @@ reference_func_growth = {}
 for compFunc in complexity_functions:
     reference_func_growth[compFunc.name()] = lerpAgainst([compFunc.func(n) for n in n_values], observedMin, observedMax)
 
+maxSharedObservations: int = len(observedValuesNormalized)
+for _, refFuncGrowth in reference_func_growth.items():
+    if len(refFuncGrowth) < maxSharedObservations:
+        maxSharedObservations = len(refFuncGrowth)
+
 # Find the closest match
 closest_match = None
 smallest_difference = float('inf')
@@ -200,11 +206,13 @@ for refFuncName, refFuncGrowth in reference_func_growth.items():
     if len(refFuncGrowth) == 0:
         continue
 
+    resized_arr = refFuncGrowth[:maxSharedObservations]
+
     # Calculate the sum of absolute differences for comparison
     diffs[refFuncName] = []
-    for obsVal, refFuncVal in zip(observedValuesNormalized, refFuncGrowth):
+    for obsVal, refFuncVal in zip(observedValuesNormalized, resized_arr):
         if refFuncVal == 0:
-            diffs[refFuncName].append(obsVal) 
+            diffs[refFuncName].append(obsVal)
         diffs[refFuncName].append(abs(obsVal - refFuncVal))
 
     diffs[refFuncName] = sum(diffs[refFuncName])
@@ -212,8 +220,14 @@ for refFuncName, refFuncGrowth in reference_func_growth.items():
 # Sort diffs on the diff value of each key in dict
 sorted_keyset = sorted(diffs, key=lambda x: diffs[x])
 
-for key in sorted_keyset:
-    print(f"{key}: {diffs[key]}")
+import sys
+if "--verbose" in sys.argv:
+    print("Growth complexity comparison: (lower is better)")
+    print(f"{'Complexity'.ljust(10)}: {'Difference'.ljust(10)}\t {'Observations'.ljust(10)}\t {'Used Observations'.ljust(10)}")
+    for key in sorted_keyset:
+        formattedValue = f"{diffs[key]:.7}"
+        formattedKey = f"{key:.10}"
+        print(f"{key.ljust(10)}: {formattedValue}\t{len(reference_func_growth[key])}\t{maxSharedObservations}")
 
 withinSignificance = []
 for key in sorted_keyset:
