@@ -12,7 +12,7 @@ class Graph:
     def add_edge(self, u, v):
         self.graph[u].append(v)
 
-    def SCCUtil(self, u, low, disc, stack_member, stack):
+    def SCCUtil(self, u, low, disc, stack_member, stack, collectionList) -> []:
         disc[u] = self.Time
         low[u] = self.Time
         self.Time += 1
@@ -21,28 +21,35 @@ class Graph:
 
         for v in self.graph[u]:
             if disc[v] == -1:
-                self.SCCUtil(v, low, disc, stack_member, stack)
+                self.SCCUtil(v, low, disc, stack_member, stack, collectionList)
                 low[u] = min(low[u], low[v])
             elif stack_member[v]:
                 low[u] = min(low[u], disc[v])
 
         w = -1
+        popped = []
         if low[u] == disc[u]:
             while w != u:
                 w = stack.pop()
-                print(self.index_node[w], end=" ")
+                popped.append(self.index_node[w])
                 stack_member[w] = False
-            print("")
+        collectionList.append(popped)
+        
 
     def SCC(self):
         disc = [-1] * self.V
         low = [-1] * self.V
         stack_member = [False] * self.V
         stack = []
+        collected = []
 
         for i in range(self.V):
             if disc[i] == -1:
-                self.SCCUtil(i, low, disc, stack_member, stack)
+                self.SCCUtil(i, low, disc, stack_member, stack, collected)
+
+        collected = [array for array in collected if array]
+        print("Amount of SCCs: ", len(collected))
+        print(collected)
 
 def parse_input(input_str):
     nodes_str = input_str.strip().replace("\"", "").split(",")
