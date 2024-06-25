@@ -103,8 +103,10 @@ class MaxHeap:
 
 if __name__ == "__main__": 
     #startHeap="[space separated list of numbers]" insert="[space separated list of numbers]"
+    #extract="[number of times to extract max]"
     startHeap = []
     toBeInserted = []
+    timesToExtract = 0
     noInfoGiven = True
     for arg in sys.argv:
         if arg.startswith("insert="):
@@ -114,6 +116,9 @@ if __name__ == "__main__":
         elif arg.startswith("startHeap="):
             startHeap = arg.split("=")[1].replace("\"", "").replace(",", "").split(" ")
             startHeap = list(map(int, startHeap))
+            noInfoGiven = False
+        elif arg.startswith("extract="):
+            timesToExtract = int(arg.split("=")[1])
             noInfoGiven = False
 
     # For each input block and wait for user
@@ -131,6 +136,10 @@ if __name__ == "__main__":
     # Create a max heap with the given input numbers
     for num in toBeInserted:
         heap.insert(num)
+
+    # Extract max from the heap as many times as specified
+    for _ in range(timesToExtract):
+        heap.extract_max()
 
     # Print the max heap
     print("Heap layout:")
