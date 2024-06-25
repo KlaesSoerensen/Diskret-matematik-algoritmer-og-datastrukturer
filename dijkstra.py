@@ -16,7 +16,7 @@ class Graph:
     def get_neighbors(self, vertex: str) -> dict[str, int]:
         return self.vertices[vertex]
 
-    def dijkstra(self, start_vertex: str):
+    def dijkstra(self, start_vertex: str, actionLimit: int = -1, verbose: bool = False):
         distances: dict[str, int] = {v: sys.maxsize for v in self.vertices}
         distances[start_vertex] = 0
         visited = set()
@@ -29,9 +29,14 @@ class Graph:
 
         queue = [(start_vertex, 0)]
         while len(queue) > 0:
+            if actionLimit != -1 and action_tracker >= actionLimit:
+                break
+
             queue = sorted(queue, key=lambda x: distances[x[0]])
             current_vertex, current_distance = queue[0]
             queue.remove((current_vertex, current_distance))
+            if verbose:
+                print(f"Popped node: {current_vertex}")
             action_tracker += 1
             if current_vertex in visited:
                 continue
@@ -46,6 +51,8 @@ class Graph:
                     changed_edges.append((current_vertex, neighbor))
 
                 queue.append((neighbor, distances[neighbor]))
+                if verbose:
+                    print(f"Pushed vertex: {neighbor}")
                 action_tracker += 1
                 push_order.add(neighbor)
 
@@ -60,7 +67,6 @@ def print_path_to_node(to: str, starting_at: str, previous_ordering: dict[str, s
         backtrack.append(step)
 
     print(list(reversed(backtrack)))
-
 
 def print_all_paths(starting_at: str, graph: Graph, previous_ordering: dict[str, str]):
     for vertex in graph.vertices:
@@ -129,8 +135,11 @@ import sys
 def fromCLIInput(args: list[str]):
     graph = Graph()
     start_vertex = None
+    actionLimit = -1
 
     for arg in args:
+        if args.startswith("actionLimit="):
+            actionLimit = int(arg.split("=")[1].strip())
         if arg.startswith("start="):
             start_vertex = arg.split("=")[1].strip()
         if arg.startswith("nodes="):
