@@ -1,9 +1,9 @@
 import sys
 
 class Graph:
-    def __init__(self, vertices, start_node='A'):
-        self.V = vertices
-        self.graph = {chr(ord(start_node) + i): {} for i in range(vertices)}
+    def __init__(self, vertices):
+        self.vertCount = len(vertices)
+        self.graph = vertices
 
     def min_key(self, key, mst_set):
         min_value = sys.maxsize
@@ -23,26 +23,25 @@ class Graph:
 
         key[start_node] = 0
 
-        for _ in range(self.V):
-            u = self.min_key(key, mst_set)
-            mst_set[u] = True
+        for _ in range(self.vertCount):
+            minNeighboor = self.min_key(key, mst_set) # Find the neigbouring node with least edge weight
+            mst_set[minNeighboor] = True
 
-            for v in self.graph[u]:
-                weight = self.graph[u][v]
+            for minNeighboorNeighboor in self.graph[minNeighboor]:
+                weight = self.graph[minNeighboor][minNeighboorNeighboor]
                 if (
-                    not mst_set[v]
-                    and weight < key[v]
+                    not mst_set[minNeighboorNeighboor]
+                    and weight < key[minNeighboorNeighboor]
                 ):
-                    key[v] = weight
-                    parent[v] = u
+                    key[minNeighboorNeighboor] = weight
+                    parent[minNeighboorNeighboor] = minNeighboor
 
         return parent
 
 # Example usage:
 
 startNode = 'A'
-g = Graph(9,startNode)
-g.graph = {
+g = Graph({
     'A': {'C': 11, 'F': 10, 'H': 2,'I':3},
     'B': {'C':5,'D':13 },
     'C': {'A':11,'B': 5,'H':9},
@@ -52,10 +51,11 @@ g.graph = {
     'G':{'E':8,'I':12},
     'H':{'A':2,'C':9,'D':1,'I':6},
     'I':{'A':3,'F':4,'G':12,'H':6}
-}
+})
 
 import sys
 for arg in sys.argv:
+    # example <...args> start=a
     if arg.startswith("start="):
         startNode = arg.split("=")[1].strip()
     
@@ -67,17 +67,17 @@ for arg in sys.argv:
 
             if ":" in nodeNeighboorPair:
                 node, edges = nodeNeighboorPair.split(":") # a: e 12, b: a 12 c 12
+                node = node.strip()
                 edges = edges.strip().split(" ")
                 tempGraph[node] = dict()
                 for i in range(0, len(edges), 2): # a 12 c 12
                     edge = edges[i]
-                    edgeWeight = edges[i+1]
-                    tempGraph[node][edge] = int(edgeWeight)
+                    edgeWeight = int(edges[i+1])
+                    tempGraph[node][edge] = edgeWeight
             else:
                 tempGraph[nodeNeighboorPair] = dict()
 
-        g = Graph(len(tempGraph),startNode)
-        g.graph = tempGraph
+        g = Graph(tempGraph)
 
 
 mst = g.prim_jarnik(startNode)
