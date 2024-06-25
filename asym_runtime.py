@@ -9,15 +9,13 @@ class Spy:
 
 # Function to count the number of iterations
 def test_algo(n, spy: Spy):
-    i = 1
-    j = n
-    while i <= j:
-        i = 4 * i
-        j = 2 * j
-        k = 0
-        while k < n: 
-            k = k + 1
-            spy.inc()
+    s = 0
+    for i in range(1, n):
+        for j in range(1, n):
+            if i == j:
+                for k in range(1, n):
+                    s += 1
+                    spy.inc()
 
 # Known growth complexities using logarithms to prevent overflow
 def log_n(n):
@@ -53,14 +51,22 @@ def n_power_n(n):
 def factorial_n(n):
     return sum(math.log(i) for i in range(1, n+1))
 
-def getNArray(count):
-    return [2 ** i for i in range(1, count)]
+def getLinNArray(count):
+    return [i*25 for i in range(1, count+1)]
 
+
+import time
 # Generate the data
-n_values = getNArray(20)
+# CONSTANTS. CANNOT BE CHANGED
+n_values = getLinNArray(1000)
 spies = [Spy() for _ in n_values] # Object pooling
 iteration_counts = []
+timeA = time.time()
+maxTimeoutSeconds = 10
 for i in range(len(n_values)):
+    if time.time() - timeA > maxTimeoutSeconds:
+        print("TIMEOUT ERROR: The algorithm took longer than: ", maxTimeoutSeconds, " seconds")
+        break
     test_algo(n_values[i], spies[i])
     iteration_counts.append(spies[i].count)
 

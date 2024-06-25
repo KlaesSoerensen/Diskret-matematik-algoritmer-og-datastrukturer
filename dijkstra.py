@@ -24,12 +24,15 @@ class Graph:
         previous: dict[str, str] = {v: None for v in self.vertices}
         changed_edges: list[tuple[str, str]] = []
         visited_order: list[str] = []
+        push_order = set()
+        action_tracker = 0
 
         queue = [(start_vertex, 0)]
         while len(queue) > 0:
             queue = sorted(queue, key=lambda x: distances[x[0]])
             current_vertex, current_distance = queue[0]
             queue.remove((current_vertex, current_distance))
+            action_tracker += 1
             if current_vertex in visited:
                 continue
 
@@ -43,8 +46,10 @@ class Graph:
                     changed_edges.append((current_vertex, neighbor))
 
                 queue.append((neighbor, distances[neighbor]))
+                action_tracker += 1
+                push_order.add(neighbor)
 
-        return distances, previous, changed_edges, visited_order
+        return distances, previous, changed_edges, visited_order, push_order
 
 
 def print_path_to_node(to: str, starting_at: str, previous_ordering: dict[str, str]):
@@ -62,7 +67,7 @@ def print_all_paths(starting_at: str, graph: Graph, previous_ordering: dict[str,
         print_path_to_node(vertex, starting_at, previous_ordering)
 
 def printAll(graph: Graph, start_vertex: str):
-    distances, previous, changed_edges, visited_order = graph.dijkstra(start_vertex)
+    distances, previous, changed_edges, visited_order, push_order = graph.dijkstra(start_vertex)
 
     print("Shortest distances from vertex", start_vertex + ":")
     for vertex, distance in distances.items():
@@ -80,8 +85,11 @@ def printAll(graph: Graph, start_vertex: str):
         print(edge[0], "->", edge[1])
     print(f"Total edges changed by RELAX: {len(changed_edges)}")
 
-    print("\nVisited order:")
+    print("\nVisited order (pop):")
     print(visited_order)
+
+    print("\nPush order:")
+    print(push_order)
 
 def emanuel():
     # Example usage:
@@ -124,15 +132,15 @@ def fromCLIInput(args: list[str]):
 
     for arg in args:
         if arg.startswith("start="):
-            start_vertex = arg.split("=")[1]
+            start_vertex = arg.split("=")[1].strip()
         if arg.startswith("nodes="):
             splitOnComma = arg.split("=")[1].replace("\"", "").split(", ")
             for nodeNeighboorPair in splitOnComma:
                 if ":" in nodeNeighboorPair:
                     nodeNeighboorSplit = nodeNeighboorPair.split(": ")
-                    node = nodeNeighboorSplit[0]
+                    node = nodeNeighboorSplit[0].strip()
                     graph.add_vertex(node)
-                    neighbors = nodeNeighboorSplit[1]
+                    neighbors = nodeNeighboorSplit[1].strip()
                     if neighbors is not None:
                         neighboorSplit = neighbors.split(" ")
                         # For each 2 elements, first is node name, second is cost
