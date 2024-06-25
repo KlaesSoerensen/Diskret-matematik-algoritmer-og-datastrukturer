@@ -25,24 +25,26 @@ class Graph:
         changed_edges: list[tuple[str, str]] = []
         visited_order: list[str] = []
         push_order = set()
-        action_tracker = 0
+        push_tracker = 0
+        pop_tracker = 0
 
         queue = [(start_vertex, 0)]
         while len(queue) > 0:
-            if actionLimit != -1 and action_tracker >= actionLimit:
-                break
-
             queue = sorted(queue, key=lambda x: distances[x[0]])
             current_vertex, current_distance = queue[0]
             queue.remove((current_vertex, current_distance))
+            pop_tracker += 1
             if verbose:
-                print(f"Popped node: {current_vertex}")
-            action_tracker += 1
+                print(f"Pop {pop_tracker} node: {current_vertex} action #: {push_tracker + pop_tracker}")
+
             if current_vertex in visited:
                 continue
 
             visited.add(current_vertex)
             visited_order.append(current_vertex)
+
+            if actionLimit != -1 and (push_tracker + pop_tracker) >= actionLimit:
+                break
 
             for neighbor, cost_along_edge in self.get_neighbors(current_vertex).items():
                 if current_distance + cost_along_edge < distances[neighbor]:
@@ -51,10 +53,13 @@ class Graph:
                     changed_edges.append((current_vertex, neighbor))
 
                 queue.append((neighbor, distances[neighbor]))
+                push_tracker += 1
                 if verbose:
-                    print(f"Pushed vertex: {neighbor}")
-                action_tracker += 1
+                    print(f"Push {push_tracker} vertex: {neighbor} action #: {push_tracker + pop_tracker}")
                 push_order.add(neighbor)
+
+            if actionLimit != -1 and (push_tracker + pop_tracker) >= actionLimit:
+                break
 
         return distances, previous, changed_edges, visited_order, push_order
 
@@ -139,13 +144,13 @@ def fromCLIInput(args: list[str]):
     verbose = False
 
     for arg in args:
-        if arg.startswith("--verbose"):
+        if arg.startswith("--verbose"): # Optional flag, if present, print all actions when taken
             verbose = True
-        if arg.startswith("actionLimit="):
+        if arg.startswith("actionLimit="): # Optional limit, if present, limit the amount of actions taken before the algorithm stops
             actionLimit = int(arg.split("=")[1].strip())
-        if arg.startswith("start="):
+        if arg.startswith("start="): # Required for CLI input, the starting vertex
             start_vertex = arg.split("=")[1].strip()
-        if arg.startswith("nodes="):
+        if arg.startswith("nodes="): # Required for CLI input, the nodes and their neighboors
             splitOnComma = arg.split("=")[1].replace("\"", "").split(", ")
             for nodeNeighboorPair in splitOnComma:
                 if ":" in nodeNeighboorPair:
