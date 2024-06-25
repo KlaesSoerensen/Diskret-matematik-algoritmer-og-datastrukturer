@@ -72,8 +72,8 @@ def print_all_paths(starting_at: str, graph: Graph, previous_ordering: dict[str,
     for vertex in graph.vertices:
         print_path_to_node(vertex, starting_at, previous_ordering)
 
-def printAll(graph: Graph, start_vertex: str):
-    distances, previous, changed_edges, visited_order, push_order = graph.dijkstra(start_vertex)
+def printAll(graph: Graph, start_vertex: str, actionLimit: int = -1, verbose: bool = False):
+    distances, previous, changed_edges, visited_order, push_order = graph.dijkstra(start_vertex, actionLimit, verbose)
 
     print("Shortest distances from vertex", start_vertex + ":")
     for vertex, distance in distances.items():
@@ -136,9 +136,12 @@ def fromCLIInput(args: list[str]):
     graph = Graph()
     start_vertex = None
     actionLimit = -1
+    verbose = False
 
     for arg in args:
-        if args.startswith("actionLimit="):
+        if arg.startswith("--verbose"):
+            verbose = True
+        if arg.startswith("actionLimit="):
             actionLimit = int(arg.split("=")[1].strip())
         if arg.startswith("start="):
             start_vertex = arg.split("=")[1].strip()
@@ -160,7 +163,7 @@ def fromCLIInput(args: list[str]):
                 else:
                     graph.add_vertex(nodeNeighboorPair)
 
-    printAll(graph, start_vertex)
+    printAll(graph, start_vertex, actionLimit=actionLimit, verbose=verbose)
     
 
 if __name__ == '__main__':
