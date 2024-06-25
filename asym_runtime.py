@@ -1,5 +1,8 @@
 import math
 
+# This program has not been verified to be mathematically correct.
+# However, it has yet to be wrong.
+
 class Spy:
     def __init__(self):
         self.count = 0
@@ -9,111 +12,215 @@ class Spy:
 
 # Function to count the number of iterations
 def test_algo(n, spy: Spy):
-    s = 0
+    i = n    
+    j = n       # 21
+    while i > 1:
+        while j > i:
+            j = j - 1
+            spy.inc()
+        i = i - 1  # O(n)
+
+"""
+    s = 0      # 20
     for i in range(1, n):
         for j in range(1, n):
             if i == j:
                 for k in range(1, n):
                     s += 1
                     spy.inc()
+        i = i - 1  # O(n^2)
 
-# Known growth complexities using logarithms to prevent overflow
-def log_n(n):
-    return math.log(n) if n > 0 else float('inf')
+    i = n    
+    j = n       # 21
+    while i > 1:
+        while j > i:
+            j = j - 1
+            spy.inc()
+        i = i - 1  # O(n)
 
-def log_n_squared(n):
-    return (math.log(n) if n > 0 else float('inf'))**2
+    i = n           # 22
+    while i > 1:
+        j = 1
+        while j < n:
+            j = j + 1
+            spy.inc()
+        i = i / 2   # O(n log n) 
+"""
+from abc import ABC, abstractmethod
+class ReferenceFunction(ABC):
+    @abstractmethod
+    def func(self, n) -> float:
+        pass
+    @abstractmethod
+    def name(self) -> str:
+        pass
 
-def n_twelve(n):
-    return n**(1/2)
+class LogN(ReferenceFunction):
+    def init(self):
+        pass
+    def func(self, n):
+        return math.log(n)
+    def name(self):
+        return "log(n)"
 
-def n(n):
-    return n
+class LogNSquared(ReferenceFunction):
+    def init(self):
+        pass
+    def func(self, n):
+        return math.log(n)**2
+    def name(self):
+        return "log(n)^2"
 
-def n_plus_n(n):
-    return n + n
+class NSquareRoot(ReferenceFunction):
+    def init(self):
+        pass
+    def func(self, n):
+        return n**0.5
+    def name(self):
+        return "sqrt(n)"
+class N(ReferenceFunction):
+    def init(self):
+        pass
+    def func(self, n):
+        return n
+    def name(self):
+        return "n"
+class NPlusN(ReferenceFunction):
+    def init(self):
+        pass
+    def func(self, n):
+        return n + n
+    def name(self):
+        return "n+n"
+class NLogN(ReferenceFunction):
+    def init(self):
+        pass
+    def func(self, n):
+        return n * math.log(n)
+    def name(self):
+        return "n*log(n)"
+class LogFactorialN(ReferenceFunction):
+    def init(self):
+        pass
+    def func(self, n):
+        return sum(math.log(i) for i in range(1, n+1))
+    def name(self):
+        return "log(!n)"
+class NSquared(ReferenceFunction):
+    def init(self):
+        pass
+    def func(self, n):
+        return n**2
+    def name(self):
+        return "n^2"
+class TwoPowerN(ReferenceFunction):
+    def init(self):
+        pass
+    def func(self, n):
+        return n * math.log(2)
+    def name(self):
+        return "2^n"
+class NPowerN(ReferenceFunction):
+    def init(self):
+        pass
+    def func(self, n):
+        return n * math.log(n)
+    def name(self):
+        return "n^n"
+class FactN(ReferenceFunction):
+    def init(self):
+        pass
+    def func(self, n):
+        return sum(math.log(i) for i in range(1, n+1))
+    def name(self):
+        return "n!"
+# To Test against
+complexity_functions = [LogN(), LogNSquared(), NSquareRoot(), N(), NPlusN(), NLogN(), LogFactorialN(), NSquared(), TwoPowerN(), NPowerN(), FactN()]
 
-def n_log_n(n):
-    return n * (math.log(n) if n > 0 else float('inf'))
+# Weight against smaller n values - higher n values count more 
+def weightValues(values):
+    return [rg * (i / len(values)) for i, rg in enumerate(values)]
 
-def log_factorial_n(n):
-    return sum(math.log(i) for i in range(1, n+1)) if n > 1 else float('inf')
+def getDeltaValues(values):
+    return [values[i] - values[i-1] for i in range(1, len(values))]
 
-def n_squared(n):
-    return n**2
+def lerpAgainst(values, refMin, refMax):
+    return [(rg - refMin) / (refMax - refMin) for rg in values]
 
-def two_power_n(n):
-    return n * math.log(2)
+def lerpValues(values):
+    # Linear interpolate all values into a 0-1 space
+    minObservedGrowth = min(values)
+    maxObservedGrowth = max(values)
+    return lerpAgainst(values, minObservedGrowth, maxObservedGrowth)
 
-def n_power_n(n):
-    return n * math.log(n)
+def normalizeValues(values):
+    # values = getDeltaValues(values)
+    # values = weightValues(values)
+    values = lerpValues(values)
+    return values
 
-def factorial_n(n):
-    return sum(math.log(i) for i in range(1, n+1))
-
-def getLinNArray(count):
-    return [i*25 for i in range(1, count+1)]
-
+def getNextN(index):
+    return 2**index
 
 import time
-# Generate the data
-# CONSTANTS. CANNOT BE CHANGED
-n_values = getLinNArray(1000)
-spies = [Spy() for _ in n_values] # Object pooling
-iteration_counts = []
+n_values = []
+absoluteObservations = []
 timeA = time.time()
 maxTimeoutSeconds = 10
-for i in range(len(n_values)):
+iterCounter = 1 # Some guys below got a problem with zeroes
+print("Checking runtime for algorithm... " + str(maxTimeoutSeconds) + " seconds remaining.")
+while True:
+    current_n = getNextN(iterCounter)
+    n_values.append(current_n)
     if time.time() - timeA > maxTimeoutSeconds:
-        print("TIMEOUT ERROR: The algorithm took longer than: ", maxTimeoutSeconds, " seconds")
+        print("Algorithm checking complete, comparing to known complexities...")
         break
-    test_algo(n_values[i], spies[i])
-    iteration_counts.append(spies[i].count)
 
+    spy = Spy()
+    test_algo(current_n, spy)
+    absoluteObservations.append(spy.count)
+    iterCounter += 1
 
-# Handle potential zero values in iteration counts
-relative_growth = []
-for i in range(len(iteration_counts)):
-    if i > 0 and iteration_counts[i-1] != 0:
-        relative_growth.append(iteration_counts[i] / iteration_counts[i-1])
-    else:
-        relative_growth.append(1)
+observedMin = min(absoluteObservations)
+observedMax = max(absoluteObservations)
+observedValuesNormalized = lerpValues(absoluteObservations)
 
+reference_func_growth = {}
 # Calculate the relative growth rates for known complexities
-complexity_functions = [log_n, log_n_squared, n_twelve, n, n_plus_n, n_log_n, log_factorial_n, n_squared, two_power_n, n_power_n, factorial_n]
-complexity_names = ["log(n)", "log(n)^2", "n^1/2", "n", "n+n", "n*log(n)", "log(!n)", "n^2", "2^n", "n^n", "!n"]
-complexity_growth = {name: [] for name in complexity_names}
-
-for func, name in zip(complexity_functions, complexity_names):
-    values = [func(n) for n in n_values]
-    growth = []
-    # TODO: Detect and handle constant offset in tested algorithm
-    for i in range(len(values)):
-        if i > 0 and values[i-1] != 0:
-            growth.append(values[i] / values[i-1])
-        else:
-            growth.append(1)
-    # Using logs to prevent overflow and domain errors
-    growth_log = [math.log(g) if g > 0 else float('inf') for g in growth]
-    complexity_growth[name] = growth_log
+for compFunc in complexity_functions:
+    reference_func_growth[compFunc.name()] = lerpAgainst([compFunc.func(n) for n in n_values], observedMin, observedMax)
 
 # Find the closest match
 closest_match = None
 smallest_difference = float('inf')
 
-print("Relative Growth of the Given Function:")
-# print(relative_growth)
-print("\nRelative Growth of Known Complexities:")
+significanceLevel = 0.01
+diffs = {}
+for refFuncName, refFuncGrowth in reference_func_growth.items():
+    if len(refFuncGrowth) == 0:
+        continue
 
-# Convert relative growth of the given function to logs to match the comparison method
-relative_growth_log = [math.log(rg) if rg > 0 else float('inf') for rg in relative_growth]
-
-for name, growth in complexity_growth.items():
-    # print(f"{name}: {growth}")
     # Calculate the sum of absolute differences for comparison
-    difference = sum(abs(rg - cg) for rg, cg in zip(relative_growth_log, growth))
-    if difference < smallest_difference:
-        smallest_difference = difference
-        closest_match = name
+    diffs[refFuncName] = []
+    for obsVal, refFuncVal in zip(observedValuesNormalized, refFuncGrowth):
+        if refFuncVal == 0:
+            diffs[refFuncName].append(obsVal) 
+        diffs[refFuncName].append(abs(obsVal - refFuncVal))
 
-print(f"\nThe closest matching growth complexity is: {closest_match}")
+    diffs[refFuncName] = sum(diffs[refFuncName])
+
+# Sort diffs on the diff value of each key in dict
+sorted_keyset = sorted(diffs, key=lambda x: diffs[x])
+
+for key in sorted_keyset:
+    print(f"{key}: {diffs[key]}")
+
+withinSignificance = []
+for key in sorted_keyset:
+    if diffs[key] < significanceLevel:
+        withinSignificance.append(key)
+
+if len(withinSignificance) == 0:
+    withinSignificance = [sorted_keyset[0], sorted_keyset[1], sorted_keyset[2]]
+
+print(f"\nThe closest matching growth complexity is: {', '.join(withinSignificance)}")
