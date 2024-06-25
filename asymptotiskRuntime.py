@@ -1,17 +1,23 @@
 import math
 
-# Function to count the number of iterations
-def count_iterations(n):
-    count = 0
+class Spy:
+    def __init__(self):
+        self.count = 0
+    
+    def inc(self):
+        self.count += 1
 
+# Function to count the number of iterations
+def test_algo(n, spy: Spy):
     i = 1
     j = n
     while i <= j:
         i = 4 * i
         j = 2 * j
-        count += 1
-
-    return count
+        k = 0
+        while k < n: 
+            k = k + 1
+            spy.inc()
 
 # Known growth complexities using logarithms to prevent overflow
 def log_n(n):
@@ -47,9 +53,17 @@ def n_power_n(n):
 def factorial_n(n):
     return sum(math.log(i) for i in range(1, n+1))
 
+def getNArray(count):
+    return [2 ** i for i in range(1, count)]
+
 # Generate the data
-n_values = [1, 10, 100, 1000, 10000]
-iteration_counts = [count_iterations(n) for n in n_values]
+n_values = getNArray(20)
+spies = [Spy() for _ in n_values] # Object pooling
+iteration_counts = []
+for i in range(len(n_values)):
+    test_algo(n_values[i], spies[i])
+    iteration_counts.append(spies[i].count)
+
 
 # Handle potential zero values in iteration counts
 relative_growth = []
@@ -67,6 +81,7 @@ complexity_growth = {name: [] for name in complexity_names}
 for func, name in zip(complexity_functions, complexity_names):
     values = [func(n) for n in n_values]
     growth = []
+    # TODO: Detect and handle constant offset in tested algorithm
     for i in range(len(values)):
         if i > 0 and values[i-1] != 0:
             growth.append(values[i] / values[i-1])
@@ -81,14 +96,14 @@ closest_match = None
 smallest_difference = float('inf')
 
 print("Relative Growth of the Given Function:")
-print(relative_growth)
+# print(relative_growth)
 print("\nRelative Growth of Known Complexities:")
 
 # Convert relative growth of the given function to logs to match the comparison method
 relative_growth_log = [math.log(rg) if rg > 0 else float('inf') for rg in relative_growth]
 
 for name, growth in complexity_growth.items():
-    print(f"{name}: {growth}")
+    # print(f"{name}: {growth}")
     # Calculate the sum of absolute differences for comparison
     difference = sum(abs(rg - cg) for rg, cg in zip(relative_growth_log, growth))
     if difference < smallest_difference:
