@@ -33,5 +33,18 @@ def radixSort(arr, iterations):
 # Example usage:
 arr = [2452, 5363, 4433, 1413, 2433, 3222, 2121]
 iterations = 3
+
+#Optional CLI Input syntax: python radixSort.py arr="[space separated list of numbers]" iterations=[number of iterations]
+#Example: python radixSort.py arr="2452, 5363, 4433, 1413, 2433, 3222, 2121" iterations=3
+import sys
+for arg in sys.argv:
+    if arg.startswith("array="):
+        inputArr = arg.split("=")[1].replace("\"", "").replace(",", "").split(" ")
+        inputArr = list(map(int, arr))
+        arr = inputArr
+    elif arg.startswith("iterations="):
+        inputIter = int(arg.split("=")[1])
+        iterations = inputIter
+
 radixSort(arr, iterations)
 print("Sorted array:", arr)
