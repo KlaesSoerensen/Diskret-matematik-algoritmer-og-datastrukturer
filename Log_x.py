@@ -19,15 +19,26 @@ def log_base_x(value, base):
 
     return math.log(value) / math.log(base)
 
+import sys
 
 def main():
-    try:
-        value = float(input("Enter the value: "))
-        base = float(input("Enter the base: "))
-        result = log_base_x(value, base)
-        print(f"log base {base} of {value} is {result}")
-    except ValueError as e:
-        print(f"Error: {e}")
+    value = None
+    base = None
+
+    # Optional CLI input syntax: python Log_x.py <value> <base>
+    if len(sys.argv) == 3:
+        value = float(sys.argv[1])
+        base = float(sys.argv[2])
+    else:
+        try:
+            value = float(input("Enter the value: "))
+            base = float(input("Enter the base: "))
+        except ValueError as e:
+            print(f"Error: {e}")
+
+        
+    result = log_base_x(value, base)
+    print(f"log base {base} of {value} is {result}")
 
 
 if __name__ == "__main__":
