@@ -29,7 +29,7 @@ class Vertex:
         return str(self.id)
 
 
-def add_neighbours(dict):
+def add_neighbours(dict, sort_alphabetically = False):
     for vertex, neighbours in dict.items():
         for neighbour in neighbours:
             vertex.addNeighbor(neighbour)
@@ -97,8 +97,8 @@ def main():
     h = Vertex('h')
     i = Vertex('i')
     j = Vertex('j')
-
-    add_neighbours({
+    vertList = {a, b, c, d, e, f, g, h}
+    neighbourDict = {
        a:[e],
        b:[c],
        c:[f,h],
@@ -109,14 +109,64 @@ def main():
        h:[b],
        i:[j],
        j:[g]
-    })
+    }
+    startNode = None
 
-    Vertexs = [a, b, c, d, e, f, g, h, i,j]
+    import sys
+    # CLI input syntax (optional): 
+    # nodes="<node_name>: <neighboor_1> <neighboor_2> ..., <node_name>: ..."
+    # Each node and its neighboors are comma separated, and each neighboor is space separated
+    # Works with nodes with no neighboors and so no ":" as well. 
+    # example: nodes="a: b c d, b: a d e, c, d: a e, e: a d, f: c e"
+    vertsFromStrs: dict[str, Vertex] = dict()
+    newVerts: list[Vertex] = []
+    newNeighbourDict: dict[Vertex, list[Vertex]] = dict()
+    for arg in sys.argv:
+        if arg.startswith("start="):
+            startNode = arg.split("=")[1]
+            if startNode not in vertsFromStrs:
+                vertsFromStrs[startNode] = Vertex(startNode)
+                newVerts.append(vertsFromStrs[startNode])
 
-    BFS(Vertexs, a)
+            if vertsFromStrs[startNode] not in newNeighbourDict:
+                newNeighbourDict[vertsFromStrs[startNode]] = []
+            
+            startNode = vertsFromStrs[startNode]
 
-    print("Vertex Added order: ", vertexAddedStr)
-    for vertex in Vertexs:
+        elif arg.startswith("nodes="):
+            splitOnComma = arg.split("=")[1].replace("\"", "").split(", ")
+            for nodeNeighboorPair in splitOnComma:
+                if ":" in nodeNeighboorPair:
+                    nodeNeighboorSplit = nodeNeighboorPair.split(": ")
+                    node = nodeNeighboorSplit[0]
+                    neighbors = nodeNeighboorSplit[1].split()
+                    if node not in vertsFromStrs:
+                        vertsFromStrs[node] = Vertex(node)
+                        newVerts.append(vertsFromStrs[node])
+                    if vertsFromStrs[node] not in newNeighbourDict:
+                        newNeighbourDict[vertsFromStrs[node]] = []
+                    for neighbor in neighbors:
+                        if neighbor not in vertsFromStrs:
+                            vertsFromStrs[neighbor] = Vertex(neighbor)
+                            newVerts.append(vertsFromStrs[neighbor])
+                        newNeighbourDict[vertsFromStrs[node]].append(vertsFromStrs[neighbor])
+                else:
+                    node = nodeNeighboorPair
+                    if node not in vertsFromStrs:
+                        vertsFromStrs[node] = Vertex(node)
+                        newVerts.append(vertsFromStrs[node])
+
+    neighbourDict = newNeighbourDict
+    vertList = newVerts
+
+
+    add_neighbours(neighbourDict)
+
+
+    BFS(vertList, startNode)
+
+    print("Vertex Added order: ")
+    for vertex in vertList:
         print(vertex.id,vertex.d)
 
 
