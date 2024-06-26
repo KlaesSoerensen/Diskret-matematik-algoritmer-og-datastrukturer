@@ -12,16 +12,19 @@ class Spy:
 
 # Function to count the number of iterations
 def test_algo(n, spy: Spy):
-    s = 0      # 20
-    for i in range(1, n):
-        for j in range(1, n):
-            if i == j:
-                for k in range(1, n):
-                    s += 1
-                    spy.inc()
-        i = i - 1  # O(n^2)
+    for i in range (1, n):
+        j = n - i
+        while j < n:
+            j = j + 1
+            spy.inc()
 
 """
+    i = 1  # Should be n^2 (not verified)
+    j = n
+    while i < j:
+        i = i + 1
+        j = j - 1
+
     s = 0      # 20
     for i in range(1, n):
         for j in range(1, n):
@@ -146,7 +149,13 @@ def getDeltaValues(values):
     return [values[i] - values[i-1] for i in range(1, len(values))]
 
 def lerpAgainst(values, refMin, refMax):
-    return [(rg - refMin) / (refMax - refMin) for rg in values]
+    lerped = []
+    delta = refMin - refMax
+    if delta == 0:
+        delta = 1
+    for val in values:
+        lerped.append((val - refMin) / (delta))
+    return lerped
 
 def lerpValues(values):
     # Linear interpolate all values into a 0-1 space
