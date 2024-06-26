@@ -1,24 +1,21 @@
 from collections import defaultdict
 
-# To find the first edges that are not in the MST
-
 class Graph:
 
     def __init__(self):
-
         self.graph = []
-
         self.node_map = defaultdict(int)
+        self.edges_set = set()
+        self.actionStep = 0
 
     def add_vertex(self, node):
-
         if node not in self.node_map:
-
             self.node_map[node] = len(self.node_map)
 
-
     def add_edge(self, u, v, w):
-        self.graph.append((u, v, w))
+        if (u, v) not in self.edges_set and (v, u) not in self.edges_set:
+            self.graph.append((u, v, w))
+            self.edges_set.add((u, v))
 
     def find(self, parent, node):
         if parent[node] == node:
@@ -31,10 +28,8 @@ class Graph:
 
         if rank[xroot] < rank[yroot]:
             parent[xroot] = yroot
-
         elif rank[xroot] > rank[yroot]:
             parent[yroot] = xroot
-
         else:
             parent[yroot] = xroot
             rank[xroot] += 1
@@ -53,7 +48,8 @@ class Graph:
             u, v, w = self.graph[i]
             i += 1
 
-            print(f"Checking edge {u} - {v}")
+            self.actionStep = self.actionStep + 1
+            print(f"Checking edge {u} - {v}" + " -> Step: " + str(self.actionStep))
             x = self.find(parent, u)
             y = self.find(parent, v)
 
@@ -61,7 +57,7 @@ class Graph:
                 e += 1
                 result.append((u, v, w))
                 self.union(parent, rank, x, y)
-            elif (v, u, w) not in result:
+            else:
                 print(f"Edge {u} - {v} is not in the spanning tree")
 
         print("Edges in the minimum spanning tree:")
@@ -70,13 +66,12 @@ class Graph:
 
 def emanuel():
     g = Graph()
-    for node in ['A', 'B', 'C', 'D','E','F','G','H','I']:
+    for node in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']:
         g.add_vertex(node)
 
     g.add_edge('A', 'H', 2)
     g.add_edge('A', 'I', 3)
     g.add_edge('A', 'C', 11)
-    g.add_edge('A', 'I', 10)
     g.add_edge('F', 'A', 10)
     g.add_edge('F', 'I', 4)
     g.add_edge('F', 'E', 7)
@@ -84,28 +79,18 @@ def emanuel():
     g.add_edge('G', 'E', 8)
     g.add_edge('B', 'C', 5)
     g.add_edge('B', 'D', 13)
-    g.add_edge('C', 'B', 5)
-    g.add_edge('C', 'A', 11)
     g.add_edge('C', 'H', 9)
-    g.add_edge('H', 'C', 9)
     g.add_edge('H', 'D', 1)
     g.add_edge('H', 'I', 6)
-    g.add_edge('H', 'A', 2)
-    g.add_edge('I', 'A', 3)
-    g.add_edge('I', 'H', 6)
-    g.add_edge('I', 'F', 4)
     g.add_edge('I', 'G', 12)
-    g.add_edge('D', 'H', 1)
     g.add_edge('D', 'B', 13)
     g.add_edge('E', 'F', 7)
     g.add_edge('E', 'G', 8)
 
     g.kruskal()
 
-
 import sys
-def fromCLIInput(args: list[str]):
-
+def fromCLIInput(args):
     graph = Graph()
     for arg in args:
         if arg.startswith("nodes="):
@@ -118,27 +103,14 @@ def fromCLIInput(args: list[str]):
                     neighbors = nodeNeighboorSplit[1]
 
                     if neighbors is not None:
-
                         neighboorSplit = neighbors.split(" ")
-                        # For each 2 elements, first is node name, second is cost
-                        # in mem: neighboorSplit = [a, 3, b, 4, c, 2]
-
                         for i in range(0, len(neighboorSplit), 2):
                             graph.add_edge(node, neighboorSplit[i], int(neighboorSplit[i + 1]))
                 else:
                     graph.add_vertex(nodeNeighboorPair)
     graph.kruskal()
 
-
 if __name__ == '__main__':
-
-    # CLI input syntax (optional): 
-	# nodes="<node_name>: <neighboor_1> <cost_1> <neighboor_2> <cost_2> ..., <node_name>: ..."
-
-	# Each node and its neighboors are comma separated, and each neighboor is space separated
-	# Works with nodes with no neighboors and so no ":" as well. 
-	# example: nodes="a: b 1 c 4 d 2, c, d: a 8 e 1, e"
-
     cliFound = False
     for arg in sys.argv:
         if arg.startswith("start=") or arg.startswith("nodes="):
@@ -148,5 +120,3 @@ if __name__ == '__main__':
     if not cliFound:
         emanuel()
 
-    print("Sammenlig -Checking edge- med -edges in the minium spanning tree- den første som IKKE er med i -spanning tree- er svaret")
-    print("Not directed, e -- f == f -- e")
