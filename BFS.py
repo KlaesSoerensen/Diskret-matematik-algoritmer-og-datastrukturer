@@ -2,20 +2,15 @@ from collections import OrderedDict
 
 vertexAdded = []
 vertexAddedStr = ""
+action_steps = []
 
 
 class Vertex:
-    id = None
-    connectedTo = {}
-    color = None
-    d = None
-    pi = None
-
     def __init__(self, key):
         self.id = key
         self.connectedTo = {}
         self.color = "white"
-        self.d = 0
+        self.d = float("inf")
         self.pi = None
 
     def getNeighbors(self):
@@ -26,16 +21,19 @@ class Vertex:
         self.connectedTo[nbr.id] = nbr
 
     def __str__(self):
-        return str(self.id) + " " + self.color + " d=" + str(self.d)
+        return str(self.id) + " " + self.color + " d=" + ("inf" if self.d == float("inf") else str(self.d))
 
 
-def add_neighbours(dict, sort_alphabetically = False):
-    for vertex, neighbours in dict.items():
+def add_neighbours(neighbour_dict):
+    for vertex, neighbours in neighbour_dict.items():
         for neighbour in neighbours:
             vertex.addNeighbor(neighbour)
 
 
 def BFS(G, s):
+    order = []
+    push_pop_log = []
+    step = 1
     for u in G:
         u.color = "white"
         u.d = float("inf")
@@ -44,49 +42,51 @@ def BFS(G, s):
     s.d = 0
     s.pi = None
     Q = []
-    enqueue(Q, s)
+    enqueue(Q, s, push_pop_log, step)
+    step += 1
     while Q != []:
-        u = dequeue(G, Q)
-        if u == None:
-            return
+        u = dequeue(G, Q, push_pop_log, step)
+        step += 1
+        if u is None:
+            return None
 
+        order.append(u)
         for v in u.getNeighbors().values():
-            # print("Current Vertex: ", v.id)
             if v.color == "white":
                 v.color = "gray"
                 v.d = u.d + 1
                 v.pi = u
-                enqueue(Q, v)
+                enqueue(Q, v, push_pop_log, step)
+                step += 1
         u.color = "black"
+    return order, push_pop_log
 
 
-def enqueue(Q, u: Vertex):
-    # print("Vertex to be added: ", u)
+def enqueue(Q, u: Vertex, log, step):
     addVertexToAddedList(u)
-    if (u.id not in vertexAdded):
+    if u.id not in vertexAdded:
         Q.append(u.id)
+        log.append({"step": step, "action": "Push", "vertex": u.id})
 
 
-def dequeue(G, Q):
+def dequeue(G, Q, log, step):
     key = Q.pop(0)
+    log.append({"step": step, "action": "Pop", "vertex": key})
     for i in range(len(G)):
         if G[i].id == key:
-            # print("Vertex to be removed: ", G[i].id)
             return G[i]
-
     return None
 
 
 def addVertexToAddedList(vertex: Vertex):
     global vertexAddedStr
-    if (vertex not in vertexAdded):
+    if vertex not in vertexAdded:
         vertexAdded.append(vertex)
         vertexAddedStr += vertex.id
-        # print("Vertex added: ", vertex.id)
 
 
 def main():
-
+    import sys
     a = Vertex('a')
     b = Vertex('b')
     c = Vertex('c')
@@ -97,41 +97,31 @@ def main():
     h = Vertex('h')
     i = Vertex('i')
     j = Vertex('j')
-    vertList = {a, b, c, d, e, f, g, h}
+    vertList = [a, b, c, d, e, f, g, h]
     neighbourDict = {
-       a:[e],
-       b:[c],
-       c:[f,h],
-       d:[a,i,j],
-       e:[b,d,g],
-       f:[g],
-       g:[c],
-       h:[b],
-       i:[j],
-       j:[g]
+        a: [e],
+        b: [c],
+        c: [f, h],
+        d: [a, i, j],
+        e: [b, d, g],
+        f: [g],
+        g: [c],
+        h: [b],
+        i: [j],
+        j: [g]
     }
     startNode = None
 
-    import sys
-    # CLI input syntax (optional): 
-    # nodes="<node_name>: <neighboor_1> <neighboor_2> ..., <node_name>: ..."
-    # Each node and its neighboors are comma separated, and each neighboor is space separated
-    # Works with nodes with no neighboors and so no ":" as well. 
-    # example: nodes="a: b c d, b: a d e, c, d: a e, e: a d, f: c e"
-    vertsFromStrs: dict[str, Vertex] = dict()
-    newVerts: list[Vertex] = []
-    newNeighbourDict: dict[Vertex, list[Vertex]] = dict()
+    vertsFromStrs = {}
+    newVerts = []
+    newNeighbourDict = {}
     for arg in sys.argv:
         if arg.startswith("start="):
-            startNode = arg.split("=")[1]
-            if startNode not in vertsFromStrs:
-                vertsFromStrs[startNode] = Vertex(startNode)
-                newVerts.append(vertsFromStrs[startNode])
-
-            if vertsFromStrs[startNode] not in newNeighbourDict:
-                newNeighbourDict[vertsFromStrs[startNode]] = []
-            
-            startNode = vertsFromStrs[startNode]
+            startNodeKey = arg.split("=")[1]
+            if startNodeKey not in vertsFromStrs:
+                vertsFromStrs[startNodeKey] = Vertex(startNodeKey)
+                newVerts.append(vertsFromStrs[startNodeKey])
+            startNode = vertsFromStrs[startNodeKey]
 
         elif arg.startswith("nodes="):
             splitOnComma = arg.split("=")[1].replace("\"", "").split(", ")
@@ -159,15 +149,28 @@ def main():
     if len(newNeighbourDict) > 0:
         neighbourDict = newNeighbourDict
     if len(newVerts) > 0:
-        vertList = newVerts
+        vertList = list(newVerts)
 
     add_neighbours(neighbourDict)
-    BFS(vertList, startNode)
 
-    print("Vertex Added order: ")
+    if startNode is None:
+        print("Start node is not defined.")
+        return
+
+    order, push_pop_log = BFS(vertList, startNode)
+
+    if order is None:
+        print("BFS did not return a valid order.")
+        return
+
+    print("Order of vertices visited:")
     for vertex in vertList:
         print(str(vertex))
 
+    print("\nQueue operations (push/pop):")
+    for log_entry in push_pop_log:
+        print(f"Step {log_entry['step']}: {log_entry['action']} {log_entry['vertex']}")
 
-if (__name__ == "__main__"):
+
+if __name__ == "__main__":
     main()
