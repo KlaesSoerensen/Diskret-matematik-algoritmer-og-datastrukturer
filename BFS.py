@@ -26,7 +26,7 @@ class Vertex:
         self.connectedTo[nbr.id] = nbr
 
     def __str__(self):
-        return str(self.id)
+        return str(self.id) + " " + self.color + " d=" + str(self.d)
 
 
 def add_neighbours(dict, sort_alphabetically = False):
@@ -166,7 +166,7 @@ def main():
 
     print("Vertex Added order: ")
     for vertex in vertList:
-        print(vertex.id,vertex.d)
+        print(str(vertex))
 
 
 if (__name__ == "__main__"):
