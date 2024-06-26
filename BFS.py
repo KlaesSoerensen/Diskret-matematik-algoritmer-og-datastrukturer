@@ -156,13 +156,12 @@ def main():
                         vertsFromStrs[node] = Vertex(node)
                         newVerts.append(vertsFromStrs[node])
 
-    neighbourDict = newNeighbourDict
-    vertList = newVerts
-
+    if len(newNeighbourDict) > 0:
+        neighbourDict = newNeighbourDict
+    if len(newVerts) > 0:
+        vertList = newVerts
 
     add_neighbours(neighbourDict)
-
-
     BFS(vertList, startNode)
 
     print("Vertex Added order: ")
