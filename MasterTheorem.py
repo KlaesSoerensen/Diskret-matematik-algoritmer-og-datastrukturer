@@ -49,16 +49,34 @@ def format_poly_log(k, i):
 
     return result
 
-
+import sys
 if __name__ == "__main__":
-    print("Format:"
-          "\nT(n) = aT(n/b) + Θ(n^k (log n)^i"
+    a, b, c, i = 0, 0, 0, 0
+
+    # Optional CLI input syntax
+    # --hasLog, there exists a log(n) term
+    # Example input: python MasterTheorem.py a=2 b=2 c=1 --hasLog
+    if len(sys.argv) != 0:
+        for arg in sys.argv:
+            if arg.startswith("a="):
+                a = float(arg.split("=")[1].strip())
+            if arg.startswith("b="):
+                b = float(arg.split("=")[1].strip())
+            if arg.startswith("c="):
+                c = float(arg.split("=")[1].strip())
+            if arg.startswith("--hasLog"):
+                i = 1
+    else:
+        print("Format:"
+          "\nT(n) = aT(n/b) + Θ(n^c * (log n)^i)"
           "\nOBS If the answer gives something like log^2(n) which does not match one of the cases, then it cannot be solved")
 
-    a = float(input("Enter a:\n"))
-    b = float(input("Enter b:\n"))
-    k = float(input("Enter c:\n"))
-    i = float(input("Enter i:\n"))
-    solved = solve_master_theorem(a, b, k, i)
+        a = float(input("Enter a:\n"))
+        b = float(input("Enter b:\n"))
+        c = float(input("Enter c:\n"))
+        i = float(input("Enter i:\n"))
+
+
+    solved = solve_master_theorem(a, b, c, i)
     print(f"Solution:"
           f"\nΘ({solved})")
