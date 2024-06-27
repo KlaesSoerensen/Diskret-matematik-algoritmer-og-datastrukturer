@@ -13,5 +13,5 @@ def linear_hashing_find_aux(A, x):
 
 
 if __name__ == '__main__':
-    possible = linear_hashing_find_aux([22, None,55, 33, 44, None, 66], 1)
+    possible = linear_hashing_find_aux([22, 77, 55, 33, 44, None, 66], 1)
     print(possible)

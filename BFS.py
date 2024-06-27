@@ -3,6 +3,7 @@ from collections import OrderedDict
 vertexAdded = []
 vertexAddedStr = ""
 action_steps = []
+sortAlphabetically = False
 
 
 class Vertex:
@@ -14,7 +15,8 @@ class Vertex:
         self.pi = None
 
     def getNeighbors(self):
-        self.connectedTo = OrderedDict(sorted(self.connectedTo.items()))
+        if sortAlphabetically:
+            self.connectedTo = OrderedDict(sorted(self.connectedTo.items()))
         return self.connectedTo
 
     def addNeighbor(self, nbr):
@@ -24,9 +26,12 @@ class Vertex:
         return str(self.id) + " " + self.color + " d=" + ("inf" if self.d == float("inf") else str(self.d))
 
 
-def add_neighbours(neighbour_dict):
+def add_neighbours(neighbour_dict, sort_alphabetically):
+    global sortAlphabetically
+    sortAlphabetically = sort_alphabetically
     for vertex, neighbours in neighbour_dict.items():
-        for neighbour in neighbours:
+        sorted_neighbours = sorted(neighbours, key=lambda x: x.id) if sort_alphabetically else neighbours
+        for neighbour in sorted_neighbours:
             vertex.addNeighbor(neighbour)
 
 
@@ -115,6 +120,8 @@ def main():
     vertsFromStrs = {}
     newVerts = []
     newNeighbourDict = {}
+    sortAlphabetically = False
+
     for arg in sys.argv:
         if arg.startswith("start="):
             startNodeKey = arg.split("=")[1]
@@ -122,6 +129,9 @@ def main():
                 vertsFromStrs[startNodeKey] = Vertex(startNodeKey)
                 newVerts.append(vertsFromStrs[startNodeKey])
             startNode = vertsFromStrs[startNodeKey]
+
+        elif arg == "--alphabetical":
+            sortAlphabetically = True
 
         elif arg.startswith("nodes="):
             splitOnComma = arg.split("=")[1].replace("\"", "").split(", ")
@@ -151,7 +161,7 @@ def main():
     if len(newVerts) > 0:
         vertList = list(newVerts)
 
-    add_neighbours(neighbourDict)
+    add_neighbours(neighbourDict, sortAlphabetically)
 
     if startNode is None:
         print("Start node is not defined.")

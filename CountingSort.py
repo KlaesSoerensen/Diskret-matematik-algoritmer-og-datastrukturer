@@ -1,44 +1,46 @@
-def countingSort(array):
-    size = len(array)
-    output = [0] * size
-    counted_array = []
-    lastSum = 0
-    count = [0] * 10
+def counting_sort(arr):
+    if not arr:
+        return arr
 
-    for i in range(0, size):
-        count[array[i]] += 1
+    print("Original array:", arr)
 
-    # Kumulative counted array
-    for i in range(0, size-1):
-        if (i == 0):
-            counted_array.append(0)
-            lastSum += count[i]
-        else:
-            counted_array.append(lastSum)
-            lastSum += count[i]
-    
-    print("Array C:",counted_array, " Sum of c: ", sum(counted_array))
-    for i in range(1, 10):
-        count[i] += count[i - 1]
+    max_val = max(arr)
+    min_val = min(arr)
+    range_of_elements = max_val - min_val + 1
 
-    i = size - 1
-    while i >= 0:
-        output[count[array[i]] - 1] = array[i]
-        count[array[i]] -= 1
-        i -= 1
+    # Create count array and initialize all values to 0
+    count_arr = [0] * range_of_elements
+    output_arr = [0] * len(arr)
 
-    for i in range(0, size):
-        array[i] = output[i]
+    # Store the count of each element
+    for num in arr:
+        count_arr[num - min_val] += 1
+
+    print("Count array:", count_arr, "-", sum(count_arr))
+
+    # Update count array to store the cumulative count
+    for i in range(1, len(count_arr)):
+        count_arr[i] += count_arr[i - 1]
+
+    print("Cumulative count array:", count_arr, "-", sum(count_arr))
+
+    # Place the elements in the output array in sorted order
+    for num in reversed(arr):
+        output_arr[count_arr[num - min_val] - 1] = num
+        count_arr[num - min_val] -= 1
+
+    print("Sorted array:", output_arr, "-", sum(output_arr))
+
+    return output_arr
 
 
-data = [2, 0, 6, 2, 3, 5, 5, 1, 2]
+# Modify the input array here
+input_array = [2, 0, 6, 2, 3, 5, 5, 1, 2]
 
 import sys
 # Optional CLI input syntax: python CountingSort.py array="1 2 3 4 5 6"
-for arg in sys.argv: 
+for arg in sys.argv:
     if arg.startswith("array="):
-        data = list(map(int, arg.split("=")[1].replace("\"", "").split(" ")))
+        input_array = list(map(int, arg.split("=")[1].replace("\"", "").split(" ")))
 
-countingSort(data)
-print("Sorted Array in Ascending Order: ")
-print(data)
+sorted_array = counting_sort(input_array)
